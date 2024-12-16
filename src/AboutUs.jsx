@@ -6,8 +6,8 @@ function AboutUs() {
     <div className="about-us-container">
       {/* <h1 className="about-us-heading">About Us</h1> */}
       <p className="about-us-description"> 
-           <h2>Welcome to Zack's Plant Nursery ! </h2> 
-           <h5 style={{ fontStyle: 'italic' }}> Where Going Green Is Made Easy </h5> 
+           Welcome to Zack's Plant Nursery ! 
+           <p style={{ fontStyle: 'italic' }}> Where Going Green Is Made Easy </p> 
           </p>
       <p className="about-us-content">
         Here at Zack's Plant Nursery, we bring nature closer to you than before. </p>
