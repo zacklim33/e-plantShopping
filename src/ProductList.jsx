@@ -1,12 +1,39 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector  } from 'react-redux';
 import './ProductList.css'
 import CartItem from './CartItem';
+import  { addItem } from "./CartSlice"
+
+{ /* Testing local image file for JSX usage*/}
 import image1 from "./images/boston-fern-5114414_1280.jpg";
 
-function ProductList() {
+
+function ProductList(props) {
     const [showCart, setShowCart] = useState(false); //State to manage visibility of shopping cart form
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-    const [addToCart, setAddToChart] = useState({}); //empty dynamic array to manage state of shopping cart
+    const [addToCart, setAddToCart] = useState({}); //empty dynamic array to manage state of shopping cart
+    
+    const dispatch = useDispatch();
+    
+    const cartItems=useSelector(state=>state.cart.items);  
+
+    useEffect( () => {
+        }, [ ] );  //use empty dynamic array to run the script at least once
+    
+    const getTotalPlants = () => {  //to compute total number of plant added to cart
+        return cartItems.reduce( (total,item) => total + item.quantity, 0);
+    }
+
+    { /* To check if plant type are inside the shopping cart;
+         If present, then disable "Add to Cart" button.   */}
+    const alreadyInCart = (name) => { 
+       const existingItem = cartItems.find( (item)=> item.name == name);       
+       if (existingItem) {
+         return true;
+       } else {
+        return false;
+       }
+    }
 
     const plantsArray = [
         {
@@ -216,6 +243,7 @@ function ProductList() {
             ]
         }
     ];
+
    const styleObj={
     backgroundColor: '#4CAF50',
     color: '#fff!important',
@@ -224,6 +252,7 @@ function ProductList() {
     justifyContent: 'space-between',
     alignIems: 'center',
     fontSize: '20px',
+
    }
    const styleObjUl={
     display: 'flex',
@@ -247,12 +276,12 @@ const handlePlantsClick = (e) => {
 };
 
 const handleAddToCart = (product) => {
-    dispatchEvent(addItem(product));
-    setAddToChart((prevState) => ( {
+    dispatch(addItem(product));
+    setAddToCart((prevState) => ( {
         ...prevState,
         [product.name]:true,
-
     }))
+    
 }
 
    const handleContinueShopping = (e) => {
@@ -263,20 +292,28 @@ const handleAddToCart = (product) => {
         <div>
              <div className="navbar" style={styleObj}>
             <div className="tag">
-               <div className="luxury">
+               <div style={{cursor:"pointer"}} className="luxury" onClick={props.toLanding} >
                <img src="https://cdn.pixabay.com/photo/2020/08/05/13/12/eco-5465432_1280.png" alt="" />
                <a href="/" style={{textDecoration:'none'}}>
                         <div>
-                    <h3 style={{color:'white'}}>Paradise Nursery</h3>
-                    <i style={{color:'white'}}>Where Green Meets Serenity</i>
+                    <h3 style={{color:'white'}}>Zack's Plant Nursery</h3>
+                    <i style={{color:'white'}}>Where Going Green Is Made Easy</i>
                     </div>
                     </a>
-                </div>
-              
+                </div>              
             </div>
+
             <div style={styleObjUl}>
                 <div> <a href="#" onClick={(e)=>handlePlantsClick(e)} style={styleA}>Plants</a></div>
-                <div> <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}><h1 className='cart'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="IconChangeColor" height="68" width="68"><rect width="156" height="156" fill="none"></rect><circle cx="80" cy="216" r="12"></circle><circle cx="184" cy="216" r="12"></circle><path d="M42.3,72H221.7l-26.4,92.4A15.9,15.9,0,0,1,179.9,176H84.1a15.9,15.9,0,0,1-15.4-11.6L32.5,37.8A8,8,0,0,0,24.8,32H8" fill="none" stroke="#faf9f9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" id="mainIconPathAttribute"></path></svg></h1></a></div>
+                <div> <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
+                    <h1 className='cart'> 
+                         {/* numbering */}
+                        <div className="cart_quantity_count"> {getTotalPlants()} </div>
+
+                         {/* shopping cart icon */}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="IconChangeColor" height="68" width="68"><rect width="156" height="156" fill="none"></rect><circle cx="80" cy="216" r="12"></circle><circle cx="184" cy="216" r="12"></circle><path d="M42.3,72H221.7l-26.4,92.4A15.9,15.9,0,0,1,179.9,176H84.1a15.9,15.9,0,0,1-15.4-11.6L32.5,37.8A8,8,0,0,0,24.8,32H8" fill="none" stroke="#faf9f9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" id="mainIconPathAttribute"></path></svg>
+                    </h1>
+                 </a></div>
             </div>
         </div>
         {!showCart? (
@@ -291,7 +328,10 @@ const handleAddToCart = (product) => {
                       <div className="product-image"> <img src={plants.image} alt={plants.name}/> </div>                      
                       <div className="product-price" > {plants.cost} </div>
                       <p> {plants.description} </p>
-                      <div className='product-button' onclidck={()=> hangleAddToCart(plants)}> Add to cart </div>
+                      <div className='product-button'
+                         disabled={alreadyInCart(plants.name)? true:false } 
+                         style={{backgroundColor:alreadyInCart(plants.name)? "gray":"#4CAF50"}}
+                         onClick={()=> handleAddToCart(plants)}> Add to cart  </div>
                    </div>
                  )) }               
             </div>
